@@ -23,3 +23,10 @@ pub mod day22;
 pub mod day23;
 pub mod day24;
 pub mod day25;
+
+#[macro_export]
+macro_rules! aocdebug {
+    () => {
+        (std::env::var("AOCDEBUG").unwrap_or(String::from("0")) != "0")
+    };
+}
