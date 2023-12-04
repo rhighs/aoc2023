@@ -1,5 +1,3 @@
-use crate::aocdebug;
-
 #[derive(Debug)]
 enum Cube {
     Red(i32),
@@ -73,8 +71,10 @@ struct GameState {
 
 pub fn p1(input: &String) -> String {
     let game_data = parse_input(input);
-    let mut not_possible: Vec<i32> = vec![];
+    let mut possible: Vec<i32> = vec![];
+
     for game in game_data {
+        let mut ok = true;
         for round in game.rounds {
             let mut game_state = GameState { red: PRESET_NO_RED, green: PRESET_NO_GREEN, blue: PRESET_NO_BLUE };
             for hand in round {
@@ -85,14 +85,34 @@ pub fn p1(input: &String) -> String {
                 }
             }
             if game_state.red < 0 || game_state.green < 0 || game_state.blue < 0 {
-                not_possible.push(game.id);
+                ok = false;
             }
         }
+        if ok {
+            possible.push(game.id);
+        }
     }
-    not_possible.into_iter().sum::<i32>().to_string()
+
+    possible.into_iter().sum::<i32>().to_string()
 }
 
-pub fn p2(_input: &String) -> String {
-    let result = String::new();
-    result
+pub fn p2(input: &String) -> String {
+    let game_data = parse_input(input);
+
+    let mut result: i32 = 0;
+    for game in game_data {
+        let mut game_state = GameState { red: 0, green: 0, blue: 0 };
+        for round in game.rounds {
+            for hand in round {
+                match hand {
+                    Cube::Red(v) => game_state.red = game_state.red.max(v),
+                    Cube::Green(v) => game_state.green = game_state.green.max(v),
+                    Cube::Blue(v) => game_state.blue = game_state.blue.max(v),
+                }
+            }
+        }
+        result += game_state.red * game_state.green * game_state.blue;
+    }
+
+    result.to_string()
 }
