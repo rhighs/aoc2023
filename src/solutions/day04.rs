@@ -49,12 +49,23 @@ pub fn p1(input: &String) -> String {
     count.to_string()
 }
 
-type CardInstance = (Vec<u32>, Vec<u32>, u32);
-
 pub fn p2(input: &String) -> String {
-    let cards: Vec<CardInstance> = parse_input(input)
-        .into_iter()
-        .map(|(w, m)| (w, m, 0))
-        .collect();
-    String::new()
+    let cards = parse_input(input);
+    cards
+        .iter()
+        .enumerate()
+        .fold((0..cards.len()).map(|_| 1).collect::<Vec<u32>>(), |mut acc, (i, (winning, mine))| {
+            mine.iter()
+                .filter(|m| winning.contains(m))
+                .enumerate()
+                .map(|(j, _)| i + j + 1)
+                .take_while(|&j| j < cards.len())
+                .for_each(|j| {
+                    acc[j] += acc[i];
+                });
+            acc
+        })
+        .iter()
+        .sum::<u32>()
+        .to_string()
 }
